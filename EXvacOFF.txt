@@ -1,0 +1,87 @@
+{
+    "items": [
+        {
+            "id": "100620264",
+            "premium": false,
+            "name": "Диспетчер чатов (в Яндекс)",
+            "department": null,
+            "has_test": false,
+            "response_letter_required": false,
+            "area": {
+                "id": "113",
+                "name": "Россия",
+                "url": "https://api.hh.ru/areas/113"
+            },
+            "salary": {
+                "from": 30000,
+                "to": 44000,
+                "currency": "RUR",
+                "gross": true
+            },
+            "type": {
+                "id": "open",
+                "name": "Открытая"
+            },
+            "address": null,
+            "response_url": null,
+            "sort_point_distance": null,
+            "published_at": "2024-05-29T15:44:58+0300",
+            "created_at": "2024-05-29T15:44:58+0300",
+            "archived": false,
+            "apply_alternate_url": "https://hh.ru/applicant/vacancy_response?vacancyId=100620264",
+            "show_logo_in_search": null,
+            "insider_interview": null,
+            "url": "https://api.hh.ru/vacancies/100620264?host=hh.ru",
+            "alternate_url": "https://hh.ru/vacancy/100620264",
+            "relations": [],
+            "employer": {
+                "id": "9498120",
+                "name": "Яндекс Команда для бизнеса",
+                "url": "https://api.hh.ru/employers/9498120",
+                "alternate_url": "https://hh.ru/employer/9498120",
+                "logo_urls": {
+                    "90": "https://img.hhcdn.ru/employer-logo/6106293.jpeg",
+                    "240": "https://img.hhcdn.ru/employer-logo/6106294.jpeg",
+                    "original": "https://img.hhcdn.ru/employer-logo-original/1121425.jpg"
+                },
+                "vacancies_url": "https://api.hh.ru/vacancies?employer_id=9498120",
+                "accredited_it_employer": false,
+                "trusted": true
+            },
+            "snippet": {
+                "requirement": "Способен работать в команде. Способен принимать решения самостоятельно. Готов учиться и узнавать новое. Опыт работы в колл-центре или службе...",
+                "responsibility": "Работать с клиентами или партнерами для решения разнообразных ситуаций. Совершать звонки по их обращениям и давать письменные ответы. "
+            },
+            "contacts": null,
+            "schedule": {
+                "id": "remote",
+                "name": "Удаленная работа"
+            },
+            "working_days": [],
+            "working_time_intervals": [],
+            "working_time_modes": [
+                {
+                    "id": "start_after_sixteen",
+                    "name": "Можно начинать работать после 16:00"
+                }
+            ],
+            "accept_temporary": false,
+            "professional_roles": [
+                {
+                    "id": "40",
+                    "name": "Другое"
+                }
+            ],
+            "accept_incomplete_resumes": true,
+            "experience": {
+                "id": "noExperience",
+                "name": "Нет опыта"
+            },
+            "employment": {
+                "id": "full",
+                "name": "Полная занятость"
+            },
+            "adv_response_url": null,
+            "is_adv_vacancy": false,
+            "adv_context": null
+        }
