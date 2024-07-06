@@ -1,0 +1,7 @@
+pandas
+request
+datetime
+time
+os
+tqdm
+colorama
