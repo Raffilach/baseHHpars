@@ -1,8 +1,11 @@
 <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.herokuapp.com?font=Ga+Maamli&pause=1000&color=CB17C4&background=FFFFFF00&random=false&width=435&lines=README+%D0%BA+%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D1%83+%D0%BF%D0%BE+%D0%BF%D0%B0%D1%80%D1%81%D0%B8%D0%BD%D0%B3%D1%83+HH.ru;Zabrodivshiy+Kivi" alt="Typing SVG" /></a>
 
-ru
+<H1> <a href = "#RU">RU</a>   /   <a href = "#EN">EN</a> </H1>
 
-Всем привет! 
+<a id="RU">Всем привет! 
+
+Содержание:
+
 
 _____________________________________________________________ 
 
@@ -47,9 +50,9 @@ _____________________________________________________________
 _____________________________________________________________ 
 _____________________________________________________________ 
 
-EN
 
-Hello everyone!
+
+<h1 id="EN">Hello everyone!
 
 _____________________________________________________________
 
