@@ -4,14 +4,12 @@ from datetime import datetime
 import time
 import os
 
-def fetch_vacancies_via_api(city='Москва', search_query='Data Scientist'):
-    print("fetch_vacancies_via_api Начала Работу")
+def fetch_vacancies_via_api(search_query=''):
+    print("Функция fetch_vacancies_via_api запущена")
 
     base_url = 'https://api.hh.ru/vacancies' #Базовый URL
     params = {
-        'text': search_query,
         'only_with_salary': True,
-        #'area': "1",  # Код Москвы - 1; spb - 2; Записал в коментарий, так-как мы не смотрими сейчас какой-то конкретный город
         'page': 0,
         'per_page': 100  # Кол-во вакансий на стр. (максимум 100)
     }
@@ -22,17 +20,17 @@ def fetch_vacancies_via_api(city='Москва', search_query='Data Scientist'):
     vacancies = [] #Сохраняем вакансии в список
 
     while True:
-        print(f"Получение данных со страницы: {params['page']}...")
+        print(f"Получаем страницу {params['page']}...")
         try:
             response = requests.get(base_url, headers=headers, params=params)
-            print(f"HTTP status code: {response.status_code}")
+            print(f"Код состояния HTTP: {response.status_code}")
             data = response.json() # Преобразование ответа в формат JSON
         except Exception as e:
-            print(f"Возникло исключение при загрузке страницы {params['page']}: {e}")
+            print(f"Произошла ошибка при получении страницы {params['page']}: {e}")
             break
 
         if response.status_code != 200:  # Проверка статуса ответа
-            print(f"Не удалось загрузить страницу. {params['page']}, status code: {response.status_code}")
+            print(f"Не удалось получить страницу {params['page']}, код состояния: {response.status_code}")
             break
 
         items = data.get('items', []) # Получение списка вакансий из данных
@@ -47,9 +45,9 @@ def fetch_vacancies_via_api(city='Москва', search_query='Data Scientist'):
                 if salary['from'] and salary['to']:
                     coin_salary = f"{salary['from']} - {salary['to']} {salary['currency']}"
                 elif salary['from']:
-                    coin_salary = f"from {salary['from']} {salary['currency']}"
+                    coin_salary = f"от {salary['from']} {salary['currency']}"
                 elif salary['to']:
-                    coin_salary = f"up to {salary['to']} {salary['currency']}"
+                    coin_salary = f"до {salary['to']} {salary['currency']}"
                 else:
                     coin_salary = 'Не указана'
             else:
@@ -88,7 +86,7 @@ def fetch_vacancies_via_api(city='Москва', search_query='Data Scientist'):
         if params['page'] >= data['pages']:
             break
 
-    print(f"Всего собрано вакансий: {len(vacancies)}") # Выводим кол-во найденый вакансий
+    print(f"Всего найдено вакансий: {len(vacancies)}") # Выводим кол-во найденных вакансий
     return vacancies
 
 def converter_salary(salary):
@@ -175,44 +173,43 @@ def read_existing_vacancies(filename):
 
 
 def save_to_csv(vacancies, filename): # Сохранение в csv
-    print("save_to_csv начато")
+    print("Функция save_to_csv запущена")
     if not vacancies:
-        print("Нет вакансий, которые можно было бы сохранить.") # Если нет вакансий, выводим это
+        print("Нет вакансий для сохранения.") # Если нет вакансий, выводим это
         return
 
-    df_new = pd.DataFrame(vacancies) # Создаем ДатаФраме из списка вакансий
-    df_existing = read_existing_vacancies(filename) # Читаем вакансии с существ. файла
+    df_new = pd.DataFrame(vacancies) # Создаем DataFrame из списка вакансий
+    df_existing = read_existing_vacancies(filename) # Читаем вакансии из существующего файла
 
-    combined = pd.concat([df_existing, df_new]).drop_duplicates(subset=['title', 'company', 'location', 'url']) # Объединение новых и существующих данных, удаление дубликатов по указанным столбцам(не трогаем последний столб, потому что там одинаково)
+    combined = pd.concat([df_existing, df_new]).drop_duplicates(subset=['title', 'company', 'location', 'url']) # Объединение новых и существующих данных, удаление дубликатов по указанным столбцам
 
 
     try:
-        combined.to_csv(filename, index=False, encoding='utf-8-sig')  # Сохраняем обьедененные данные в csv
+        combined.to_csv(filename, index=False, encoding='utf-8-sig')  # Сохраняем объединенные данные в csv
 
         print(f"Данные сохранены в {filename}")
     except Exception as e:
-        print(f"Возникло исключение при сохранении в CSV: {e}")
+        print(f"Произошла ошибка при сохранении в CSV: {e}")
 
 
 def fetch_and_save_vacancies(search_query, filename):  # Функция для получения и сохранения вакансий
-    print(f"Получение данных начинается в {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}...")
+    print(f"Начало получения данных {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}...")
     vacancies = fetch_vacancies_via_api(search_query=search_query)  # Получение вакансий по запросу
 
     if vacancies:
         save_to_csv(vacancies, filename) # Сохранение вакансий в файл
     else:
-        print("Вакансий не найдено.")
+        print("Вакансии не найдены.")
 
 def main():
     search_query = input("Введите название вакансии: ") # Пользователь вводит название вакансии
-    today = datetime.today().strftime('%Y-%m-%d') # Получаем дату
-    filename = f'File_Name_{today}.csv' # Создаем файл
-    # Мы создаем такое название файла для того, что-бы было понятно с какого дня у нас ведется сбор данных
+    filename = f'<Your_file_name.csv>' # Фиксируем изначальное имя файла, для того, чтобы все записывалось туда
+    # Мы создаем такое название файла для того, чтобы было понятно, с какого дня у нас ведется сбор данных
     fetch_and_save_vacancies(search_query, filename) # Первоначальный запрос и сохранение вакансий
 
     while True:
-        time.sleep(3536)  # 9000 секунд = 2.5 часа
+        time.sleep(3536)  # 3536 секунд ~ 1 час
         fetch_and_save_vacancies(search_query, filename) # Периодический запрос и сохранение вакансий
 if __name__ == '__main__':
-    print("Выполнение скрипта началось")
+    print("Запуск скрипта")
     main()
