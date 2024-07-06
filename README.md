@@ -5,11 +5,11 @@
 <p><a id="RU">Всем привет! </p>
 
 <p>Содержание:</p>
-<a href = "esse">1 - Суть проекта</a>
-<a href = "files">2 - Рассказ про файлы</a>
-<a href = "csv">3 - Пояснение к CSV</a>
-<a href = "new1">4 - Обновление 06.07.2024</a>
-<a href = "stat">5 - Статус проекта</a>
+<a href = "#esse">1 - Суть проекта</a>
+<a href = "#files">2 - Рассказ про файлы</a>
+<a href = "#csv">3 - Пояснение к CSV</a>
+<a href = "#new1">4 - Обновление 06.07.2024</a>
+<a href = "#stat">5 - Статус проекта</a>
 
 
 <p>_____________________________________________________________ </p>
@@ -58,11 +58,11 @@
 <p><h3 id="EN">Hello everyone!</h3></p>
 
 <p>Contents:</p>
-<a href = "esse.2">1 - The essence of the project</a>
-<a href = "files.2">2 - A story about files</a>
-<a href = "csv.2">3 - Explanation of CSV</a>
-<a href = "new1.2">4 - Update 07/06/2024</a>
-<a href = "stat.2">5 - Project status</a>
+<a href = "#esse.2">1 - The essence of the project</a>
+<a href = "#files.2">2 - A story about files</a>
+<a href = "#csv.2">3 - Explanation of CSV</a>
+<a href = "#new1.2">4 - Update 07/06/2024</a>
+<a href = "#stat.2">5 - Project status</a>
 
 <p>_____________________________________________________________</p>
 
