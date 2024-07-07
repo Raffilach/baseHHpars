@@ -17,21 +17,21 @@ def check_vacancy(df, id, index):
 
         if actchek == "Открытая":
             df.at[index, 'status'] = "Открыта"
-            df.at[index, 'check_Time'] = datetime.now().strftime('%d.%м.%Y - %H:%М:%S')
+            df.at[index, 'check_Time'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
         else:
             df.at[index, 'status'] = "Закрыта"
-            df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%m.%Y - %H:%М:%S')
+            df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
             df.at[index, 'closing_Year'] = datetime.now().strftime('%Y')
             df.at[index, 'closing_Month'] = datetime.now().strftime('%m')
             df.at[index, 'closing_Day'] = datetime.now().strftime('%d')
-            df.at[index, 'check_Time'] = datetime.now().strftime('%d.%м.%Y - %H:%М:%S')
+            df.at[index, 'check_Time'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
     except requests.RequestException as e:
         df.at[index, 'status'] = "Закрыта"
-        df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%m.%Y - %H:%М:%S')
+        df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
         df.at[index, 'closing_Year'] = datetime.now().strftime('%Y')
         df.at[index, 'closing_Month'] = datetime.now().strftime('%m')
         df.at[index, 'closing_Day'] = datetime.now().strftime('%d')
-        df.at[index, 'check_Time'] = datetime.now().strftime('%d.%м.%Y - %H:%М:%S')
+        df.at[index, 'check_Time'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
 
 def main():
     input_file_path = 'OFFresParsHH_2024-06-15.csv'
