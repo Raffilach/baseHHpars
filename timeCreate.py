@@ -5,7 +5,6 @@ import time
 from tqdm import tqdm
 from colorama import Fore, init
 
-
 def check_vacancy(df, id, index):
     try:
         url = f'https://api.hh.ru/vacancies/{id}'
@@ -21,17 +20,17 @@ def check_vacancy(df, id, index):
         else:
             df.at[index, 'status'] = "Закрыта"
             df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
-            df.at[index, 'closing_Year'] = datetime.now().strftime('%Y')
-            df.at[index, 'closing_Month'] = datetime.now().strftime('%m')
-            df.at[index, 'closing_Day'] = datetime.now().strftime('%d')
-            df.at[index, 'check_Time'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
+            df.at[index, 'closing_Year'] = int(datetime.now().year)
+            df.at[index, 'closing_Month'] = int(datetime.now().month)
+            df.at[index, 'closing_Day'] = int(datetime.now().day)
+            df.at[index, 'check_Time'] = datetime.now().strftime('%d.%м.%Y - %H:%M:%S')
     except requests.RequestException as e:
         df.at[index, 'status'] = "Закрыта"
-        df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
-        df.at[index, 'closing_Year'] = datetime.now().strftime('%Y')
-        df.at[index, 'closing_Month'] = datetime.now().strftime('%m')
-        df.at[index, 'closing_Day'] = datetime.now().strftime('%d')
-        df.at[index, 'check_Time'] = datetime.now().strftime('%d.%m.%Y - %H:%M:%S')
+        df.at[index, 'closing_Date'] = datetime.now().strftime('%d.%м.%Y - %H:%М:%S')
+        df.at[index, 'closing_Year'] = int(datetime.now().year)
+        df.at[index, 'closing_Month'] = int(datetime.now().month)
+        df.at[index, 'closing_Day'] = int(datetime.now().day)
+        df.at[index, 'check_Time'] = datetime.now().strftime('%d.%м.%Y - %H:%М:%S')
 
 def main():
     input_file_path = 'OFFresParsHH_2024-06-15.csv'
@@ -54,6 +53,11 @@ def main():
         if 'check_Time' not in df.columns:
             df['check_Time'] = pd.NA
 
+        # Приведение типов
+        df['closing_Year'] = df['closing_Year'].astype('Int64')
+        df['closing_Month'] = df['closing_Month'].astype('Int64')
+        df['closing_Day'] = df['closing_Day'].astype('Int64')
+
         for index, row in tqdm(df.iterrows(),
                                desc="\033[31m Проверка вакансий: \033[0m",
                                total=len(df),
@@ -61,7 +65,7 @@ def main():
             id = row['id']
             status = row['status']
 
-            if status != "Закрыта":
+            if pd.isna(status) or status != "Закрыта":
                 check_vacancy(df, id, index)
 
         df.to_csv(output_file_path, index=False)
