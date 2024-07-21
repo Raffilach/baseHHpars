@@ -3,15 +3,16 @@ import pandas as pd
 from datetime import datetime
 import time
 import os
+from tqdm import tqdm
 
-def fetch_vacancies_via_api(search_query=''):
+def fetch_vacancies_via_api():
     print("Функция fetch_vacancies_via_api запущена")
 
-    base_url = 'https://api.hh.ru/vacancies' #Базовый URL
+    base_url = 'https://api.hh.ru/vacancies'
     params = {
         'only_with_salary': True,
         'page': 0,
-        'per_page': 100  # Кол-во вакансий на стр. (максимум 100)
+        'per_page': 100
     }
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -41,27 +42,16 @@ def fetch_vacancies_via_api(search_query=''):
         for item in items:
             title = item.get('name', 'Не указано') # Получаем название вакансии
             salary = item.get('salary')  # Получаем зарплату
-            if salary:
-                if salary['from'] and salary['to']:
-                    coin_salary = f"{salary['from']} - {salary['to']} {salary['currency']}"
-                elif salary['from']:
-                    coin_salary = f"от {salary['from']} {salary['currency']}"
-                elif salary['to']:
-                    coin_salary = f"до {salary['to']} {salary['currency']}"
-                else:
-                    coin_salary = 'Не указана'
-            else:
-                coin_salary = 'Не указана'
+            coin_salary = get_salary(salary)
             company = item['employer'].get('name', 'Не указано') # Получаем название компании
             location = item['area'].get('name', 'Не указано') # Получаем город вакансии
             url = item.get('alternate_url', 'Не указано')  # Получаем ссылку вакансии
+            js_url = item.get('url', 'Не указано')  # Получаем ссылку api вакансии
             published_date = item.get('published_at', 'Не указано') # Дата публикации вакансии
             professional_roles = ', '.join([role['name'] for role in item.get('professional_roles', [])])
             experience = item['experience'].get('name')
             schedule = item['schedule'].get('name')
             id = item.get('id')
-            position = search_query # Записываем поисковой запрос
-
             converted_salary = converter_salary(salary)
             readable_date = converter_date(published_date)
             readable_time = converter_time(published_date)
@@ -79,7 +69,7 @@ def fetch_vacancies_via_api(search_query=''):
                 'published_time': readable_time,
                 'id': id,
                 'url': url,
-                'position': position
+                'js_url': js_url,
             })
 
         params['page'] += 1
@@ -88,6 +78,21 @@ def fetch_vacancies_via_api(search_query=''):
 
     print(f"Всего найдено вакансий: {len(vacancies)}") # Выводим кол-во найденных вакансий
     return vacancies
+
+
+def get_salary(salary):
+    if salary:
+        if salary['from'] and salary['to']:
+            coin_salary = f"{salary['from']} - {salary['to']} {salary['currency']}"
+        elif salary['from']:
+            coin_salary = f"от {salary['from']} {salary['currency']}"
+        elif salary['to']:
+            coin_salary = f"до {salary['to']} {salary['currency']}"
+        else:
+            coin_salary = 'Не указана'
+    else:
+        coin_salary = 'Не указана'
+    return coin_salary
 
 def converter_salary(salary):
     if salary:
@@ -158,9 +163,7 @@ def converter_date(published_date):
     return readable_date
 def converter_time(published_date):
     iso_time_str = published_date
-    # Парсинг строки даты в объект datetime
     time_obj = datetime.strptime(iso_time_str, "%Y-%m-%dT%H:%M:%S%z")
-    # Приведение к читабельному виду
     readable_time = time_obj.strftime("%H:%M")
     return readable_time
 
@@ -169,32 +172,40 @@ def read_existing_vacancies(filename):
     if os.path.exists(filename): # Проверяем наличие файла с вакансиями
         return pd.read_csv(filename) #
     else:
-        return pd.DataFrame(columns=['title', 'salary', 'rub_salary', 'professional_roles', 'experience', 'schedule', 'company', 'location','published_date', 'published_time', 'id', 'url', 'position']) #
+        return pd.DataFrame(columns=['title', 'salary', 'rub_salary',
+                                     'professional_roles', 'experience', 'schedule',
+                                     'company', 'location','published_date',
+                                     'published_time', 'id', 'url', 'js_url',
+                                     ])
 
 
-def save_to_csv(vacancies, filename): # Сохранение в csv
+def save_to_csv(vacancies, filename):  # Сохранение в csv
     print("Функция save_to_csv запущена")
     if not vacancies:
-        print("Нет вакансий для сохранения.") # Если нет вакансий, выводим это
+        print("Нет вакансий для сохранения.")  # Если нет вакансий, выводим это
         return
 
-    df_new = pd.DataFrame(vacancies) # Создаем DataFrame из списка вакансий
-    df_existing = read_existing_vacancies(filename) # Читаем вакансии из существующего файла
+    df_new = pd.DataFrame(vacancies)  # Создаем DataFrame из списка вакансий
+    df_existing = read_existing_vacancies(filename)  # Читаем вакансии из существующего файла
 
-    combined = pd.concat([df_existing, df_new]).drop_duplicates(subset=['title', 'company', 'location', 'url']) # Объединение новых и существующих данных, удаление дубликатов по указанным столбцам
-
+    # Исключаем пустые или полностью NA DataFrame-ы
+    if df_existing.empty:
+        combined = df_new
+    elif df_new.empty:
+        combined = df_existing
+    else:
+        combined = pd.concat([df_existing, df_new]).drop_duplicates(subset=['title', 'company', 'location', 'url'])  # Объединение новых и существующих данных, удаление дубликатов по указанным столбцам
 
     try:
         combined.to_csv(filename, index=False, encoding='utf-8-sig')  # Сохраняем объединенные данные в csv
-
         print(f"Данные сохранены в {filename}")
     except Exception as e:
         print(f"Произошла ошибка при сохранении в CSV: {e}")
 
 
-def fetch_and_save_vacancies(search_query, filename):  # Функция для получения и сохранения вакансий
+def fetch_and_save_vacancies(filename):  # Функция для получения и сохранения вакансий
     print(f"Начало получения данных {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}...")
-    vacancies = fetch_vacancies_via_api(search_query=search_query)  # Получение вакансий по запросу
+    vacancies = fetch_vacancies_via_api()  # Получение вакансий по запросу
 
     if vacancies:
         save_to_csv(vacancies, filename) # Сохранение вакансий в файл
@@ -202,14 +213,21 @@ def fetch_and_save_vacancies(search_query, filename):  # Функция для �
         print("Вакансии не найдены.")
 
 def main():
-    search_query = input("Введите название вакансии: ") # Пользователь вводит название вакансии
-    filename = f'<Your_file_name.csv>' # Фиксируем изначальное имя файла, для того, чтобы все записывалось туда
-    # Мы создаем такое название файла для того, чтобы было понятно, с какого дня у нас ведется сбор данных
-    fetch_and_save_vacancies(search_query, filename) # Первоначальный запрос и сохранение вакансий
+    filename = f'TEST_ParsHH_21-07-2024.csv'
+    fetch_and_save_vacancies(filename)
 
     while True:
-        time.sleep(3536)  # 3536 секунд ~ 1 час
-        fetch_and_save_vacancies(search_query, filename) # Периодический запрос и сохранение вакансий
+        wait_time_seconds = 3536  # 1 час в секундах
+
+        with tqdm(total=wait_time_seconds,
+                  desc="До повторной проверки",
+                  colour='green') as pbar:
+            for _ in range(wait_time_seconds):
+                time.sleep(1)
+                pbar.update(1)
+        fetch_and_save_vacancies(filename) # Периодический запрос и сохранение вакансий
+
+
 if __name__ == '__main__':
     print("Запуск скрипта")
     main()
